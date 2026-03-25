@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEITO — Checkout</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black:   #0a0a0a;
+    --white:   #ffffff;
+    --red:     #88271d;
+    --red-err: #e05a4a;
+    --dim:     rgba(255,255,255,0.4);
+    --dimmer:  rgba(255,255,255,0.15);
+    --surface: #111111;
+    --surface2:#0d0d0d;
+    --border:  rgba(255,255,255,0.1);
+    --border2: rgba(255,255,255,0.06);
+  }
+  body {
+    background: var(--black); color: var(--white);
+    font-family: 'DM Mono', monospace; font-weight: 300;
+    min-height: 100vh; cursor: none;
+  }
+  .cursor {
+    position: fixed; width: 8px; height: 8px;
+    background: var(--white); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width 0.15s, height 0.15s;
+  }
+  body:has(a:hover) .cursor,
+  body:has(button:hover) .cursor {
+    width: 34px; height: 34px;
+    background: transparent; border: 1px solid var(--white);
+  }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 2.5rem; background: var(--red);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { display: inline-block; text-decoration: none; }
+  .nav-logo img { height: 30px; width: auto; display: block; }
+  .nav-back {
+    font-size: 0.52rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.6);
+    text-decoration: none; text-transform: uppercase;
+    display: flex; align-items: center; gap: 0.5rem;
+    transition: color 0.2s; cursor: none;
+  }
+  .nav-back:hover { color: var(--white); }
+
+  /* LAYOUT */
+  .checkout-layout {
+    display: grid; grid-template-columns: 1fr 380px;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* FORM */
+  .form-side { padding: 3rem 3.5rem 4rem; border-right: 1px solid var(--border); }
+  .page-title {
+    font-size: 1.6rem; letter-spacing: 0.15em;
+    text-transform: uppercase; margin-bottom: 2.5rem; font-weight: 400;
+  }
+
+  /* METHOD */
+  .section-label {
+    font-size: 0.46rem; letter-spacing: 0.28em; color: var(--dim);
+    text-transform: uppercase; margin-bottom: 1rem; padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--border2);
+  }
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 2rem; }
+  .method-card {
+    border: 1px solid var(--border); background: var(--surface2);
+    padding: 1.1rem 1.3rem; cursor: none;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .method-card:hover { border-color: var(--dimmer); }
+  .method-card.selected { border-color: var(--white); background: var(--surface); }
+  .method-card.selected .mdot { background: var(--white); }
+  .mdot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.2); flex-shrink: 0; transition: background 0.2s; }
+  .method-name { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--white); margin-bottom: 0.15rem; }
+  .method-sub  { font-size: 0.44rem; letter-spacing: 0.1em; color: var(--dim); text-transform: uppercase; }
+
+  /* FORM BLOCKS */
+  .form-block { display: none; margin-bottom: 1.8rem; }
+  .form-block.active { display: block; }
+  .form-row { display: grid; gap: 0.7rem; margin-bottom: 0.7rem; }
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+
+  /* FIELD */
+  .field { display: flex; flex-direction: column; gap: 0.35rem; position: relative; }
+  .field label { font-size: 0.44rem; letter-spacing: 0.22em; color: var(--dim); text-transform: uppercase; }
+  .field input, .field select {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--white); font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.05em;
+    padding: 0.85rem 1rem; outline: none;
+    transition: border-color 0.2s; -webkit-appearance: none; width: 100%;
+  }
+  .field input::placeholder { color: rgba(255,255,255,0.18); }
+  .field input:focus, .field select:focus { border-color: rgba(255,255,255,0.5); }
+  .field select { cursor: none; }
+  .field select option { background: var(--black); }
+
+  /* VALIDATION */
+  .field input.error, .field select.error { border-color: var(--red-err); }
+  .field-err {
+    font-size: 0.42rem; letter-spacing: 0.1em;
+    color: var(--red-err); text-transform: uppercase;
+    display: none; margin-top: 0.1rem;
+  }
+  .field.has-error .field-err { display: block; }
+  .field.has-error input, .field.has-error select { border-color: var(--red-err); }
+
+  /* CARD ICONS */
+  .card-icons { display: flex; gap: 0.4rem; margin-bottom: 1rem; }
+  .card-icon {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 3px; padding: 0.28rem 0.55rem;
+    font-size: 0.44rem; letter-spacing: 0.1em; color: var(--dim); text-transform: uppercase;
+  }
+
+  /* 7-11 */
+  .store-finder {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 1.1rem 1.3rem; margin-bottom: 0.7rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .store-status { font-size: 0.44rem; letter-spacing: 0.18em; color: var(--dim); text-transform: uppercase; margin-bottom: 0.25rem; }
+  .store-name  { font-size: 0.72rem; letter-spacing: 0.05em; color: var(--white); }
+  .store-btn {
+    font-size: 0.48rem; letter-spacing: 0.18em; color: var(--white);
+    text-transform: uppercase; background: none;
+    border: 1px solid var(--dimmer); padding: 0.5rem 0.9rem;
+    cursor: none; transition: border-color 0.2s; font-family: 'DM Mono', monospace;
+  }
+  .store-btn:hover { border-color: var(--white); }
+  .store-err { font-size: 0.42rem; color: var(--red-err); letter-spacing: 0.1em; text-transform: uppercase; display: none; margin-top: 0.4rem; }
+  .store-err.show { display: block; }
+
+  /* NOTICE */
+  .notice {
+    border-left: 2px solid var(--dimmer); padding: 0.7rem 1rem;
+    margin-bottom: 1rem; font-size: 0.55rem; letter-spacing: 0.05em;
+    color: var(--dim); line-height: 1.9;
+  }
+
+  /* SUBMIT */
+  .submit-btn {
+    width: 100%; background: var(--white); color: var(--black);
+    font-family: 'DM Mono', monospace; font-weight: 400;
+    font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+    border: 2px solid var(--white); padding: 1.2rem; cursor: none;
+    transition: background 0.2s, color 0.2s; margin-top: 0.8rem;
+  }
+  .submit-btn:hover { background: transparent; color: var(--white); }
+  .submit-btn:disabled { opacity: 0.4; pointer-events: none; }
+  .form-note {
+    font-size: 0.44rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.25);
+    text-align: center; margin-top: 0.9rem; line-height: 1.9; text-transform: uppercase;
+  }
+
+  /* SUMMARY */
+  .summary-side {
+    padding: 3rem 2.2rem; background: var(--surface);
+    position: sticky; top: 60px; align-self: start;
+    max-height: calc(100vh - 60px); overflow-y: auto;
+  }
+  .summary-label { font-size: 0.46rem; letter-spacing: 0.3em; color: var(--dim); text-transform: uppercase; margin-bottom: 1.8rem; }
+  .product-row {
+    display: flex; gap: 1rem; align-items: flex-start;
+    margin-bottom: 1.8rem; padding-bottom: 1.8rem; border-bottom: 1px solid var(--border2);
+  }
+  .product-thumb { width: 58px; aspect-ratio: 182/257; flex-shrink: 0; overflow: hidden; }
+  .product-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .product-logo   { height: 24px; width: auto; display: block; margin-bottom: 0.35rem; }
+  .product-issue  { font-size: 0.6rem; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.25rem; }
+  .product-format { font-size: 0.44rem; letter-spacing: 0.18em; color: rgba(255,255,255,0.25); text-transform: uppercase; }
+
+  .summary-rows { margin-bottom: 1.3rem; }
+  .s-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 0.7rem 0; border-bottom: 1px solid var(--border2);
+    font-size: 0.58rem; letter-spacing: 0.08em; color: var(--dim);
+  }
+  .s-row:last-child { border-bottom: none; }
+  .s-row.total {
+    color: var(--white); font-size: 0.75rem; font-weight: 400;
+    padding-top: 1rem; border-top: 1px solid var(--border); border-bottom: none; margin-top: 0.4rem;
+  }
+  .s-price { color: var(--white); white-space: nowrap; }
+  .s-ship-sub { font-size: 0.44rem; color: var(--dim); display: block; margin-top: 0.2rem; }
+
+  /* SUCCESS */
+  .success-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: var(--black);
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 2rem;
+  }
+  .success-overlay.show { display: flex; }
+  .success-mark  { font-size: 1.4rem; margin-bottom: 2rem; color: var(--dim); }
+  .success-title { font-size: 2.2rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--white); margin-bottom: 0.5rem; font-weight: 400; }
+  .success-sub   { font-size: 0.58rem; letter-spacing: 0.14em; color: var(--dim); text-transform: uppercase; line-height: 2.2; margin-bottom: 0.8rem; }
+  .success-order { font-size: 0.5rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.25); margin-bottom: 2.5rem; }
+  .success-back  {
+    font-size: 0.55rem; letter-spacing: 0.2em; color: var(--dim);
+    text-transform: uppercase; background: none; border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px;
+    cursor: none; font-family: 'DM Mono', monospace; transition: color 0.2s, border-color 0.2s;
+  }
+  .success-back:hover { color: var(--white); border-color: var(--white); }
+
+  /* MOBILE */
+  @media (max-width: 860px) {
+    .checkout-layout { grid-template-columns: 1fr; }
+    .summary-side {
+      position: static; max-height: none; order: -1;
+      padding: 2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .form-side { padding: 2rem 1.5rem; border-right: none; }
+    nav { padding: 1rem 1.5rem; }
+    .method-grid { grid-template-columns: 1fr; }
+    .form-row.cols-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<nav>
+  <a href="seito.html" class="nav-back">← Back</a>
+  <a href="seito.html" class="nav-logo"><img src="seito-logo.png" alt="Seito"></a>
+  <div style="width:60px"></div>
+</nav>
+
+<div class="checkout-layout">
+
+  <!-- FORM -->
+  <div class="form-side">
+    <h1 class="page-title">Checkout</h1>
+
+    <!-- PAYMENT METHOD -->
+    <div style="margin-bottom:1.8rem">
+      <div class="section-label">Payment Method</div>
+      <div class="method-grid">
+        <div class="method-card selected" onclick="selectMethod('card',this)">
+          <div class="mdot"></div>
+          <div><div class="method-name">信用卡</div><div class="method-sub">Credit / Debit</div></div>
+        </div>
+        <div class="method-card" onclick="selectMethod('711',this)">
+          <div class="mdot"></div>
+          <div><div class="method-name">7-11 取貨付款</div><div class="method-sub">Cash on Delivery</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD -->
+    <div class="form-block active" id="form-card">
+      <div class="section-label">Card Details</div>
+      <div class="card-icons">
+        <span class="card-icon">VISA</span><span class="card-icon">MC</span>
+        <span class="card-icon">JCB</span><span class="card-icon">AMEX</span>
+      </div>
+      <div class="form-row">
+        <div class="field" id="f-cardnum">
+          <label>Card Number *</label>
+          <input type="text" id="cardNum" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCard(this)" autocomplete="cc-number">
+          <span class="field-err">Please enter a valid card number</span>
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="field" id="f-expiry">
+          <label>Expiry *</label>
+          <input type="text" id="expiry" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)" autocomplete="cc-exp">
+          <span class="field-err">Invalid expiry date</span>
+        </div>
+        <div class="field" id="f-cvv">
+          <label>CVV *</label>
+          <input type="text" id="cvv" placeholder="•••" maxlength="4" autocomplete="cc-csc">
+          <span class="field-err">Invalid CVV</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field" id="f-cardname">
+          <label>Cardholder Name *</label>
+          <input type="text" id="cardName" placeholder="Name as on card" autocomplete="cc-name">
+          <span class="field-err">Please enter cardholder name</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7-11 -->
+    <div class="form-block" id="form-711">
+      <div class="section-label">取貨門市 Store Selection</div>
+      <div class="notice">
+        請選擇取貨門市。付款含 NT$60 運費，取貨時現金支付。<br>
+        NT$60 shipping fee payable in cash upon pickup.
+      </div>
+      <div class="store-finder">
+        <div>
+          <div class="store-status">Selected Store</div>
+          <div class="store-name" id="storeName">尚未選擇門市</div>
+        </div>
+        <button class="store-btn" onclick="selectStore()">選擇門市 →</button>
+      </div>
+      <div class="store-err" id="storeErr">請先選擇取貨門市 · Please select a store</div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="form-block active" id="section-contact">
+      <div class="section-label">Contact Information</div>
+      <div class="form-row cols-2">
+        <div class="field" id="f-name">
+          <label>姓名 Full Name *</label>
+          <input type="text" id="fullName" placeholder="王小明" autocomplete="name">
+          <span class="field-err">Please enter your name</span>
+        </div>
+        <div class="field" id="f-phone">
+          <label>電話 Phone *</label>
+          <input type="tel" id="phone" placeholder="09XX-XXX-XXX" autocomplete="tel">
+          <span class="field-err">Please enter a valid phone number</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field" id="f-email">
+          <label>Email *</label>
+          <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+          <span class="field-err">Please enter a valid email</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADDRESS (card only) -->
+    <div class="form-block active" id="section-address">
+      <div class="section-label">Shipping Address</div>
+      <div class="form-row cols-2">
+        <div class="field" id="f-city">
+          <label>縣市 City *</label>
+          <select id="city" autocomplete="address-level1">
+            <option value="">選擇縣市</option>
+            <option>台北市</option><option>新北市</option><option>桃園市</option>
+            <option>台中市</option><option>台南市</option><option>高雄市</option>
+            <option>基隆市</option><option>新竹市</option><option>新竹縣</option>
+            <option>苗栗縣</option><option>彰化縣</option><option>南投縣</option>
+            <option>雲林縣</option><option>嘉義市</option><option>嘉義縣</option>
+            <option>屏東縣</option><option>宜蘭縣</option><option>花蓮縣</option>
+            <option>台東縣</option><option>澎湖縣</option><option>金門縣</option>
+            <option>連江縣</option>
+          </select>
+          <span class="field-err">Please select a city</span>
+        </div>
+        <div class="field" id="f-postal">
+          <label>郵遞區號 Postal Code *</label>
+          <input type="text" id="postal" placeholder="100" maxlength="6" autocomplete="postal-code">
+          <span class="field-err">Please enter postal code</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field" id="f-district">
+          <label>區 / 鄉鎮 District *</label>
+          <input type="text" id="district" placeholder="中正區" autocomplete="address-level2">
+          <span class="field-err">Please enter district</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field" id="f-address">
+          <label>地址 Address *</label>
+          <input type="text" id="address" placeholder="XX路XX號XX樓" autocomplete="street-address">
+          <span class="field-err">Please enter your address</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitOrder()">Confirm Order →</button>
+    <p class="form-note">
+      訂單成立後將以 Email 確認出貨資訊<br>
+      We do not store your card details
+    </p>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-side">
+    <div class="summary-label">Order Summary</div>
+    <div class="product-row">
+      <div class="product-thumb"><img src="seito-cover.png" alt="SEITO 001"></div>
+      <div>
+        <img src="seito-logo.png" alt="Seito" class="product-logo">
+        <div class="product-issue">Issue 001</div>
+        <div class="product-format">B5 Print Edition · 2026</div>
+      </div>
+    </div>
+    <div class="summary-rows">
+      <div class="s-row">
+        <span>SEITO 001 × 1</span>
+        <span class="s-price">NT$1,000</span>
+      </div>
+      <div class="s-row">
+        <span>
+          運費 Shipping
+          <span class="s-ship-sub" id="shipLabel">信用卡宅配</span>
+        </span>
+        <span class="s-price" id="shipPrice">NT$80</span>
+      </div>
+      <div class="s-row total">
+        <span>Total</span>
+        <span id="totalPrice">NT$1,080</span>
+      </div>
+    </div>
+    <div class="notice">
+      限量發行，售完為止。訂購後 3–5 個工作天出貨。<br>
+      Limited print run. Ships in 3–5 business days.
+    </div>
+  </div>
+
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-mark">✦</div>
+  <div class="success-title">Order Confirmed</div>
+  <div class="success-sub">
+    感謝你支持 SEITO。<br>
+    訂單確認信將寄至你的 Email。<br>
+    Thank you for being part of the culture.
+  </div>
+  <div class="success-order" id="orderNum"></div>
+  <button class="success-back" onclick="window.location.href='seito.html'">← Back to SEITO</button>
+</div>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top  = e.clientY + 'px';
+  });
+
+  const PRICE = 1000, SHIP_CARD = 80, SHIP_711 = 60;
+  let method = 'card', storeSelected = false;
+
+  function updateSummary() {
+    const ship = method === 'card' ? SHIP_CARD : SHIP_711;
+    document.getElementById('shipPrice').textContent  = `NT$${ship.toLocaleString()}`;
+    document.getElementById('totalPrice').textContent = `NT$${(PRICE + ship).toLocaleString()}`;
+    document.getElementById('shipLabel').textContent  = method === 'card' ? '信用卡宅配' : '7-11 取貨付款';
+  }
+
+  function selectMethod(m, el) {
+    method = m;
+    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('form-card').classList.toggle('active', m === 'card');
+    document.getElementById('form-711').classList.toggle('active', m === '711');
+    document.getElementById('section-address').classList.toggle('active', m === 'card');
+    updateSummary();
+  }
+
+  function formatCard(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,16);
+    el.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }
+  function formatExpiry(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 2) v = v.slice(0,2) + ' / ' + v.slice(2);
+    el.value = v;
+  }
+
+  // Store selection (demo list)
+  const stores = [
+    '7-Eleven 台北忠孝店','7-Eleven 信義旗艦店',
+    '7-Eleven 大安文化店','7-Eleven 中山北路店',
+    '7-Eleven 松山車站店','7-Eleven 東區忠孝店'
+  ];
+  function selectStore() {
+    const s = stores[Math.floor(Math.random() * stores.length)];
+    document.getElementById('storeName').textContent = s;
+    storeSelected = true;
+    document.getElementById('storeErr').classList.remove('show');
+  }
+
+  // ── VALIDATION ──
+  function setErr(fieldId, show) {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.classList.toggle('has-error', show);
+  }
+
+  function validateCard() {
+    let ok = true;
+    const num   = document.getElementById('cardNum').value.replace(/\s/g,'');
+    const exp   = document.getElementById('expiry').value;
+    const cvv   = document.getElementById('cvv').value;
+    const cname = document.getElementById('cardName').value.trim();
+
+    const numOk = /^\d{13,16}$/.test(num);
+    setErr('f-cardnum', !numOk); if (!numOk) ok = false;
+
+    const expOk = /^(0[1-9]|1[0-2]) \/ \d{2}$/.test(exp);
+    setErr('f-expiry', !expOk); if (!expOk) ok = false;
+
+    const cvvOk = /^\d{3,4}$/.test(cvv);
+    setErr('f-cvv', !cvvOk); if (!cvvOk) ok = false;
+
+    const nameOk = cname.length > 1;
+    setErr('f-cardname', !nameOk); if (!nameOk) ok = false;
+
+    return ok;
+  }
+
+  function validateContact() {
+    let ok = true;
+    const name  = document.getElementById('fullName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    setErr('f-name',  name.length < 2);  if (name.length < 2)  ok = false;
+    setErr('f-phone', !/^[0-9\-\s\+]{8,15}$/.test(phone)); if (!/^[0-9\-\s\+]{8,15}$/.test(phone)) ok = false;
+    setErr('f-email', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ok = false;
+
+    return ok;
+  }
+
+  function validateAddress() {
+    let ok = true;
+    const city     = document.getElementById('city').value;
+    const postal   = document.getElementById('postal').value.trim();
+    const district = document.getElementById('district').value.trim();
+    const address  = document.getElementById('address').value.trim();
+
+    setErr('f-city',     !city);           if (!city)           ok = false;
+    setErr('f-postal',   postal.length < 3); if (postal.length < 3) ok = false;
+    setErr('f-district', district.length < 2); if (district.length < 2) ok = false;
+    setErr('f-address',  address.length < 4); if (address.length < 4) ok = false;
+
+    return ok;
+  }
+
+  // Clear error on input
+  document.addEventListener('input', e => {
+    const field = e.target.closest('.field');
+    if (field && field.classList.contains('has-error')) field.classList.remove('has-error');
+  });
+  document.addEventListener('change', e => {
+    const field = e.target.closest('.field');
+    if (field && field.classList.contains('has-error')) field.classList.remove('has-error');
+  });
+
+  function submitOrder() {
+    let ok = true;
+
+    if (method === 'card') {
+      if (!validateCard()) ok = false;
+    } else {
+      if (!storeSelected) {
+        document.getElementById('storeErr').classList.add('show');
+        ok = false;
+      }
+    }
+
+    if (!validateContact()) ok = false;
+    if (method === 'card' && !validateAddress()) ok = false;
+
+    if (!ok) {
+      // scroll to first error
+      const first = document.querySelector('.has-error, .store-err.show');
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // Submit
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Processing...';
+    btn.disabled = true;
+
+    setTimeout(() => {
+      const orderNum = 'SEITO-' + Date.now().toString().slice(-6);
+      document.getElementById('orderNum').textContent = 'Order #' + orderNum;
+      document.getElementById('successOverlay').classList.add('show');
+    }, 1800);
+  }
+
+  updateSummary();
+</script>
+</body>
+</html>
