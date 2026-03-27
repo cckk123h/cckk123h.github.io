@@ -16,269 +16,85 @@
     --surface: #111111;
     --border:  rgba(255,255,255,0.1);
     --err:     #e05a4a;
-    --unit:    1000;
   }
-  body {
-    background: var(--black); color: var(--white);
-    font-family: 'DM Mono', monospace; font-weight: 300;
-    min-height: 100vh; cursor: none;
-  }
-  .cursor {
-    position: fixed; width: 8px; height: 8px;
-    background: var(--white); border-radius: 50%;
-    pointer-events: none; z-index: 9999;
-    transform: translate(-50%,-50%);
-    transition: width 0.15s, height 0.15s;
-  }
-  body:has(a:hover) .cursor,
-  body:has(button:hover) .cursor {
-    width: 34px; height: 34px;
-    background: transparent; border: 1px solid var(--white);
-  }
-
-  /* NAV */
-  nav {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.2rem 2.5rem; background: var(--red);
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    position: sticky; top: 0; z-index: 100;
-  }
+  body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-weight: 300; min-height: 100vh; cursor: none; }
+  .cursor { position: fixed; width: 8px; height: 8px; background: var(--white); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width 0.15s, height 0.15s; }
+  body:has(a:hover) .cursor, body:has(button:hover) .cursor { width: 34px; height: 34px; background: transparent; border: 1px solid var(--white); }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 2.5rem; background: var(--red); border-bottom: 1px solid rgba(255,255,255,0.15); position: sticky; top: 0; z-index: 100; }
   .nav-logo { display: inline-block; text-decoration: none; }
   .nav-logo img { height: 30px; width: auto; display: block; }
-  .nav-back {
-    font-size: 0.52rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.6);
-    text-decoration: none; text-transform: uppercase;
-    transition: color 0.2s; cursor: none;
-  }
+  .nav-back { font-size: 0.52rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.6); text-decoration: none; text-transform: uppercase; transition: color 0.2s; cursor: none; }
   .nav-back:hover { color: var(--white); }
-
-  /* PAGE LAYOUT */
-  .page {
-    display: grid; grid-template-columns: 1fr 400px;
-    min-height: calc(100vh - 60px);
-  }
-
-  /* ── FORM SIDE ── */
-  .form-side {
-    padding: 3.5rem 4rem;
-    border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; justify-content: center;
-  }
-  .step-label {
-    font-size: 0.46rem; letter-spacing: 0.3em; color: var(--dim);
-    text-transform: uppercase; margin-bottom: 0.7rem;
-  }
-  .page-title {
-    font-size: 1.8rem; letter-spacing: 0.12em;
-    text-transform: uppercase; font-weight: 400; margin-bottom: 0.6rem;
-  }
-  .page-subtitle {
-    font-size: 0.56rem; letter-spacing: 0.07em;
-    color: var(--dim); line-height: 1.9; margin-bottom: 3rem;
-  }
-
-  /* FIELDS */
+  .page { display: grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 60px); }
+  .form-side { padding: 3.5rem 4rem; border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
+  .step-label { font-size: 0.46rem; letter-spacing: 0.3em; color: var(--dim); text-transform: uppercase; margin-bottom: 0.7rem; }
+  .page-title { font-size: 1.8rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 400; margin-bottom: 0.6rem; }
+  .page-subtitle { font-size: 0.56rem; letter-spacing: 0.07em; color: var(--dim); line-height: 1.9; margin-bottom: 3rem; }
   .fields { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem; }
   .field { display: flex; flex-direction: column; gap: 0.38rem; }
   .field label { font-size: 0.44rem; letter-spacing: 0.25em; color: var(--dim); text-transform: uppercase; }
-  .field input {
-    background: var(--surface); border: 1px solid var(--border);
-    color: var(--white); font-family: 'DM Mono', monospace;
-    font-size: 0.78rem; letter-spacing: 0.05em;
-    padding: 1rem 1.1rem; outline: none; width: 100%;
-    transition: border-color 0.2s;
-  }
+  .field input { background: var(--surface); border: 1px solid var(--border); color: var(--white); font-family: 'DM Mono', monospace; font-size: 0.78rem; letter-spacing: 0.05em; padding: 1rem 1.1rem; outline: none; width: 100%; transition: border-color 0.2s; }
   .field input::placeholder { color: rgba(255,255,255,0.18); }
   .field input:focus { border-color: rgba(255,255,255,0.5); }
   .field.has-error input { border-color: var(--err); }
   .field-err { font-size: 0.42rem; letter-spacing: 0.1em; color: var(--err); text-transform: uppercase; display: none; }
   .field.has-error .field-err { display: block; }
-
-  /* SUBMIT */
-  .btn-submit {
-    width: 100%; background: var(--white); color: var(--black);
-    font-family: 'DM Mono', monospace; font-weight: 400;
-    font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
-    border: 2px solid var(--white); padding: 1.2rem;
-    cursor: none; transition: background 0.2s, color 0.2s;
-  }
+  .btn-submit { width: 100%; background: var(--white); color: var(--black); font-family: 'DM Mono', monospace; font-weight: 400; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; border: 2px solid var(--white); padding: 1.2rem; cursor: none; transition: background 0.2s, color 0.2s; }
   .btn-submit:hover { background: transparent; color: var(--white); }
   .btn-submit:disabled { opacity: 0.35; pointer-events: none; }
-  .form-note {
-    font-size: 0.44rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.22);
-    text-align: center; margin-top: 1rem; line-height: 2; text-transform: uppercase;
-  }
-
-  /* STEP 2 */
+  .form-note { font-size: 0.44rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.22); text-align: center; margin-top: 1rem; line-height: 2; text-transform: uppercase; }
   .step2 { display: none; text-align: center; padding: 1rem 0; }
   .step2.show { display: block; }
-  .step2-icon  { font-size: 1.2rem; color: var(--dim); margin-bottom: 1.5rem; }
+  .step2-icon { font-size: 1.2rem; color: var(--dim); margin-bottom: 1.5rem; }
   .step2-title { font-size: 1.4rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 400; margin-bottom: 0.8rem; }
-  .step2-desc  { font-size: 0.6rem; letter-spacing: 0.07em; color: var(--dim); line-height: 2; margin-bottom: 2.5rem; }
-  .btn-711 {
-    display: block; text-align: center;
-    background: var(--white); color: var(--black);
-    font-family: 'DM Mono', monospace; font-weight: 400;
-    font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase;
-    text-decoration: none; padding: 1.2rem 2.8rem;
-    border: 2px solid var(--white); cursor: none;
-    transition: background 0.2s, color 0.2s; margin-bottom: 1rem;
-  }
+  .step2-desc { font-size: 0.6rem; letter-spacing: 0.07em; color: var(--dim); line-height: 2; margin-bottom: 2.5rem; }
+  .btn-711 { display: block; text-align: center; background: var(--white); color: var(--black); font-family: 'DM Mono', monospace; font-weight: 400; font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase; text-decoration: none; padding: 1.2rem 2.8rem; border: 2px solid var(--white); cursor: none; transition: background 0.2s, color 0.2s; margin-bottom: 1rem; }
   .btn-711:hover { background: transparent; color: var(--white); }
-  .btn-restart {
-    font-size: 0.5rem; letter-spacing: 0.18em; color: var(--dim);
-    text-transform: uppercase; background: none; border: none;
-    border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 2px;
-    cursor: none; font-family: 'DM Mono', monospace; transition: color 0.2s; margin-top: 0.5rem;
-  }
+  .btn-restart { font-size: 0.5rem; letter-spacing: 0.18em; color: var(--dim); text-transform: uppercase; background: none; border: none; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 2px; cursor: none; font-family: 'DM Mono', monospace; transition: color 0.2s; margin-top: 0.5rem; }
   .btn-restart:hover { color: var(--white); }
-
-  /* ── SUMMARY SIDE ── */
-  .summary-side {
-    padding: 3rem 2.5rem; background: var(--surface);
-    position: sticky; top: 60px; align-self: start;
-    max-height: calc(100vh - 60px); overflow-y: auto;
-  }
+  .summary-side { padding: 3rem 2.5rem; background: var(--surface); position: sticky; top: 60px; align-self: start; max-height: calc(100vh - 60px); overflow-y: auto; }
   .summary-label { font-size: 0.46rem; letter-spacing: 0.3em; color: var(--dim); text-transform: uppercase; margin-bottom: 1.8rem; }
-
-  /* PRODUCT CARD */
-  .product-card {
-    display: flex; gap: 1.2rem; align-items: flex-start;
-    padding-bottom: 1.8rem; margin-bottom: 1.8rem;
-    border-bottom: 1px solid var(--dimmer);
-  }
-
-  /* COVER — clickable, bigger on mobile */
-  .product-thumb {
-    width: 80px; aspect-ratio: 182/257;
-    flex-shrink: 0; overflow: hidden;
-    cursor: none; position: relative;
-  }
+  .product-card { display: flex; gap: 1.2rem; align-items: flex-start; padding-bottom: 1.8rem; margin-bottom: 1.8rem; border-bottom: 1px solid var(--dimmer); }
+  .product-thumb { width: 80px; aspect-ratio: 182/257; flex-shrink: 0; overflow: hidden; cursor: none; position: relative; }
   .product-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.2s; }
   .product-thumb:hover img { opacity: 0.8; }
-  .thumb-zoom {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: opacity 0.2s;
-    font-size: 0.5rem; letter-spacing: 0.1em; color: var(--white);
-    text-transform: uppercase; background: rgba(0,0,0,0.4);
-  }
+  .thumb-zoom { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; font-size: 0.5rem; letter-spacing: 0.1em; color: var(--white); text-transform: uppercase; background: rgba(0,0,0,0.4); }
   .product-thumb:hover .thumb-zoom { opacity: 1; }
-
   .product-info { flex: 1; min-width: 0; }
-  /* logo smaller in summary */
-  .product-logo   { height: 18px; width: auto; display: block; margin-bottom: 0.4rem; }
-  .product-issue  { font-size: 0.58rem; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.2rem; }
+  .product-logo { height: 18px; width: auto; display: block; margin-bottom: 0.4rem; }
+  .product-issue { font-size: 0.58rem; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.2rem; }
   .product-format { font-size: 0.42rem; letter-spacing: 0.16em; color: rgba(255,255,255,0.25); text-transform: uppercase; }
-
-  /* QUANTITY SELECTOR */
-  .qty-row {
-    display: flex; align-items: center; gap: 0;
-    margin-top: 1rem; border: 1px solid var(--border);
-    width: fit-content;
-  }
-  .qty-btn {
-    width: 36px; height: 36px;
-    background: none; border: none; color: var(--white);
-    font-size: 1.1rem; cursor: none; line-height: 1;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s; font-family: 'DM Mono', monospace;
-    flex-shrink: 0;
-  }
+  .qty-row { display: flex; align-items: center; margin-top: 1rem; border: 1px solid var(--border); width: fit-content; }
+  .qty-btn { width: 36px; height: 36px; background: none; border: none; color: var(--white); font-size: 1.1rem; cursor: none; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-family: 'DM Mono', monospace; flex-shrink: 0; }
   .qty-btn:hover { background: rgba(255,255,255,0.08); }
   .qty-btn:disabled { color: rgba(255,255,255,0.2); pointer-events: none; }
-  .qty-num {
-    width: 40px; text-align: center;
-    font-size: 0.75rem; letter-spacing: 0.1em; color: var(--white);
-    border-left: 1px solid var(--border); border-right: 1px solid var(--border);
-    line-height: 36px;
-    user-select: none;
-  }
-
-  /* PRICE ROWS */
+  .qty-num { width: 40px; text-align: center; font-size: 0.75rem; letter-spacing: 0.1em; color: var(--white); border-left: 1px solid var(--border); border-right: 1px solid var(--border); line-height: 36px; user-select: none; }
   .s-rows { margin-bottom: 1rem; }
-  .s-row {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 0.7rem 0; border-bottom: 1px solid var(--dimmer);
-    font-size: 0.56rem; letter-spacing: 0.06em; color: var(--dim);
-  }
+  .s-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 0.7rem 0; border-bottom: 1px solid var(--dimmer); font-size: 0.56rem; letter-spacing: 0.06em; color: var(--dim); }
   .s-row:last-child { border-bottom: none; }
-  .s-row.total {
-    color: var(--white); font-size: 0.78rem; font-weight: 400;
-    padding-top: 1rem; border-top: 1px solid var(--border);
-    border-bottom: none; margin-top: 0.4rem;
-  }
+  .s-row.total { color: var(--white); font-size: 0.78rem; font-weight: 400; padding-top: 1rem; border-top: 1px solid var(--border); border-bottom: none; margin-top: 0.4rem; }
   .s-price { color: var(--white); white-space: nowrap; }
-
-  .notice {
-    border-left: 2px solid var(--dimmer); padding: 0.75rem 1rem;
-    margin-top: 1.2rem; font-size: 0.52rem; letter-spacing: 0.05em;
-    color: var(--dim); line-height: 1.9;
-  }
-
-  /* ── LIGHTBOX ── */
-  .lightbox {
-    display: none; position: fixed; inset: 0; z-index: 500;
-    background: rgba(0,0,0,0.92);
-    align-items: center; justify-content: center;
-    padding: 2rem;
-    animation: lbFade 0.25s ease both;
-  }
-  .lightbox.open { display: flex; }
-  .lightbox-inner {
-    position: relative;
-    max-height: 90vh;
-    aspect-ratio: 182/257;
-    animation: lbUp 0.3s ease both;
-  }
-  .lightbox-inner img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    max-height: 90vh;
-  }
-  .lb-close {
-    position: absolute; top: -2.2rem; right: 0;
-    font-size: 0.52rem; letter-spacing: 0.2em; color: var(--dim);
-    text-transform: uppercase; background: none; border: none;
-    font-family: 'DM Mono', monospace; cursor: none; transition: color 0.2s;
-  }
+  .notice { border-left: 2px solid var(--dimmer); padding: 0.75rem 1rem; margin-top: 1.2rem; font-size: 0.52rem; letter-spacing: 0.05em; color: var(--dim); line-height: 1.9; }
+  .lightbox { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.93); align-items: center; justify-content: center; padding: 2rem; }
+  .lightbox.open { display: flex; animation: lbFade 0.25s ease both; }
+  .lightbox-inner { position: relative; max-height: 90vh; aspect-ratio: 182/257; animation: lbUp 0.3s ease both; }
+  .lightbox-inner img { width: 100%; height: 100%; object-fit: cover; display: block; max-height: 90vh; }
+  .lb-close { position: absolute; top: -2.2rem; right: 0; font-size: 0.52rem; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; background: none; border: none; font-family: 'DM Mono', monospace; cursor: none; transition: color 0.2s; }
   .lb-close:hover { color: var(--white); }
-  .lb-caption {
-    position: absolute; bottom: -1.8rem; left: 0;
-    font-size: 0.46rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.3); text-transform: uppercase;
-  }
-  .lb-hint {
-    position: absolute; bottom: -1.8rem; right: 0;
-    font-size: 0.46rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.2); text-transform: uppercase;
-  }
-
+  .lb-caption { position: absolute; bottom: -1.8rem; left: 0; font-size: 0.46rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+  .lb-hint { position: absolute; bottom: -1.8rem; right: 0; font-size: 0.44rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.2); text-transform: uppercase; }
   @keyframes lbFade { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes lbUp   { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-
-  /* ── MOBILE ── */
+  @keyframes lbUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   @media (max-width: 768px) {
     .page { grid-template-columns: 1fr; }
-
-    .summary-side {
-      position: static; max-height: none;
-      order: -1; padding: 1.8rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    /* bigger cover on mobile */
+    .summary-side { position: static; max-height: none; order: -1; padding: 1.8rem 1.5rem; border-bottom: 1px solid var(--border); }
     .product-thumb { width: 110px; }
-
-    /* logo smaller on mobile */
     .product-logo { height: 14px; }
-
     .form-side { padding: 2rem 1.5rem; border-right: none; }
     nav { padding: 1rem 1.5rem; }
-
     .lightbox-inner { max-width: 90vw; }
   }
-
-  @media (max-width: 400px) {
-    .product-thumb { width: 90px; }
-  }
+  @media (max-width: 400px) { .product-thumb { width: 90px; } }
 </style>
 </head>
 <body>
@@ -286,17 +102,13 @@
 <div class="cursor" id="cursor"></div>
 
 <nav>
-  <a href="seito.html" class="nav-back">← Back</a>
-  <a href="seito.html" class="nav-logo"><img src="seito-logo.png" alt="Seito"></a>
+  <a href="index.html" class="nav-back">← Back</a>
+  <a href="index.html" class="nav-logo"><img src="seito-logo.png" alt="Seito"></a>
   <div style="width:60px"></div>
 </nav>
 
 <div class="page">
-
-  <!-- ── FORM ── -->
   <div class="form-side">
-
-    <!-- STEP 1 -->
     <div id="step1">
       <p class="step-label">Step 1 of 2</p>
       <h1 class="page-title">留下資料</h1>
@@ -304,7 +116,6 @@
         填寫後我們將你的資訊記錄下來，<br>
         接著會帶你前往賣貨便完成付款與取貨設定。
       </p>
-
       <div class="fields">
         <div class="field" id="f-name">
           <label>真實姓名 Full Name *</label>
@@ -322,14 +133,9 @@
           <span class="field-err">請輸入有效的 Email</span>
         </div>
       </div>
-
-      <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
-        下一步：前往付款 →
-      </button>
+      <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">下一步：前往付款 →</button>
       <p class="form-note">你的資料僅用於訂單確認，不會用於其他用途</p>
     </div>
-
-    <!-- STEP 2 -->
     <div class="step2" id="step2">
       <div class="step2-icon">✦</div>
       <div class="step2-title">資料已記錄</div>
@@ -339,33 +145,23 @@
         Thank you. Please proceed to complete<br>
         your purchase on 賣貨便.
       </div>
-      <!-- ↓ 換成你的賣貨便商品連結 ↓ -->
-      <a href="YOUR_賣貨便_LINK_HERE" class="btn-711" target="_blank" id="711link">
-        前往賣貨便付款 →
-      </a>
+      <a href="YOUR_賣貨便_LINK_HERE" class="btn-711" target="_blank">前往賣貨便付款 →</a>
       <br>
       <button class="btn-restart" onclick="restart()">← 重新填寫</button>
     </div>
-
   </div>
 
-  <!-- ── SUMMARY ── -->
   <div class="summary-side">
     <div class="summary-label">Order Summary</div>
-
     <div class="product-card">
-      <!-- clickable cover -->
-      <div class="product-thumb" onclick="openLightbox('seito-cover.png', 'SEITO Issue 001 — Cover')">
+      <div class="product-thumb" onclick="openLightbox('seito-cover.png','SEITO Issue 001 — Cover')">
         <img src="seito-cover.png" alt="SEITO 001">
         <div class="thumb-zoom">放大 ↗</div>
       </div>
-
       <div class="product-info">
         <img src="seito-logo.png" alt="Seito" class="product-logo">
         <div class="product-issue">Issue 001</div>
         <div class="product-format">B5 Print · 2026</div>
-
-        <!-- QUANTITY -->
         <div class="qty-row">
           <button class="qty-btn" id="qtyMinus" onclick="changeQty(-1)" disabled>−</button>
           <div class="qty-num" id="qtyNum">1</div>
@@ -373,32 +169,15 @@
         </div>
       </div>
     </div>
-
     <div class="s-rows">
-      <div class="s-row">
-        <span>SEITO 001 × <span id="s-qty">1</span></span>
-        <span class="s-price" id="s-subtotal">NT$1,000</span>
-      </div>
-      <div class="s-row">
-        <span>運費 Shipping</span>
-        <span class="s-price">依賣貨便</span>
-      </div>
-      <div class="s-row total">
-        <span>小計 Subtotal</span>
-        <span id="s-total">NT$1,000</span>
-      </div>
+      <div class="s-row"><span>SEITO 001 × <span id="s-qty">1</span></span><span class="s-price" id="s-subtotal">NT$1,000</span></div>
+      <div class="s-row"><span>運費 Shipping</span><span class="s-price">依賣貨便</span></div>
+      <div class="s-row total"><span>小計 Subtotal</span><span id="s-total">NT$1,000</span></div>
     </div>
-
-    <div class="notice">
-      限量發行，售完為止。<br>
-      付款與取貨由賣貨便處理。<br>
-      Limited print run. Payment &amp; pickup via 賣貨便.
-    </div>
+    <div class="notice">限量發行，售完為止。<br>付款與取貨由賣貨便處理。<br>Limited print run. Payment &amp; pickup via 賣貨便.</div>
   </div>
-
 </div>
 
-<!-- ── LIGHTBOX ── -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
   <div class="lightbox-inner">
     <button class="lb-close" onclick="closeLightbox()">✕ Close</button>
@@ -409,32 +188,25 @@
 </div>
 
 <script>
-  // Cursor
   const cur = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cur.style.left = e.clientX + 'px';
-    cur.style.top  = e.clientY + 'px';
-  });
+  document.addEventListener('mousemove', e => { cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px'; });
 
-  // ── QUANTITY ──
   const UNIT_PRICE = 1000;
   let qty = 1;
-
   function changeQty(delta) {
     qty = Math.max(1, qty + delta);
-    document.getElementById('qtyNum').textContent   = qty;
-    document.getElementById('qtyMinus').disabled    = qty <= 1;
-    document.getElementById('s-qty').textContent    = qty;
-    document.getElementById('s-subtotal').textContent = `NT$${(UNIT_PRICE * qty).toLocaleString()}`;
-    document.getElementById('s-total').textContent   = `NT$${(UNIT_PRICE * qty).toLocaleString()}`;
+    document.getElementById('qtyNum').textContent = qty;
+    document.getElementById('qtyMinus').disabled = qty <= 1;
+    document.getElementById('s-qty').textContent = qty;
+    document.getElementById('s-subtotal').textContent = `NT$${(UNIT_PRICE*qty).toLocaleString()}`;
+    document.getElementById('s-total').textContent = `NT$${(UNIT_PRICE*qty).toLocaleString()}`;
   }
 
-  // ── VALIDATION ──
   function validate() {
-    const name  = document.getElementById('inp-name').value.trim();
+    const name = document.getElementById('inp-name').value.trim();
     const phone = document.getElementById('inp-phone').value.trim();
     const email = document.getElementById('inp-email').value.trim();
-    const nameOk  = name.length >= 2;
+    const nameOk = name.length >= 2;
     const phoneOk = /^[0-9\-\s\+]{8,15}$/.test(phone);
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     document.getElementById('f-name').classList.toggle('has-error', !nameOk);
@@ -443,72 +215,34 @@
     return nameOk && phoneOk && emailOk;
   }
 
-  document.addEventListener('input', e => {
-    const f = e.target.closest('.field');
-    if (f) f.classList.remove('has-error');
-  });
+  document.addEventListener('input', e => { const f = e.target.closest('.field'); if (f) f.classList.remove('has-error'); });
 
-  // ── SUBMIT ──
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwh5f3ouY2GvGZUlqj4vOACmb_vUR0FCIno_Sspcja-fXHF-I9Dz0Co1uXlQnmw0jqANQ/exec';
 
   async function handleSubmit() {
-    if (!validate()) {
-      document.querySelector('.has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
+    if (!validate()) { document.querySelector('.has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     const btn = document.getElementById('submitBtn');
-    btn.textContent = '處理中...';
-    btn.disabled = true;
-
+    btn.textContent = '處理中...'; btn.disabled = true;
     const orderNum = 'SEITO-' + Date.now().toString().slice(-6);
-    const payload = {
-      name:  document.getElementById('inp-name').value.trim(),
-      phone: document.getElementById('inp-phone').value.trim(),
-      email: document.getElementById('inp-email').value.trim(),
-      order: orderNum,
-      qty:   qty
-    };
-
-    try {
-      await fetch(SCRIPT_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch (err) { console.log('Submitted', payload); }
-
+    const payload = { name: document.getElementById('inp-name').value.trim(), phone: document.getElementById('inp-phone').value.trim(), email: document.getElementById('inp-email').value.trim(), order: orderNum, qty: qty };
+    try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); } catch(err) {}
     document.getElementById('step1').style.display = 'none';
     document.getElementById('step2').classList.add('show');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function restart() {
-    qty = 1;
-    changeQty(0);
+    qty = 1; changeQty(0);
     document.getElementById('step1').style.display = 'block';
     document.getElementById('step2').classList.remove('show');
     ['inp-name','inp-phone','inp-email'].forEach(id => document.getElementById(id).value = '');
     const btn = document.getElementById('submitBtn');
-    btn.textContent = '下一步：前往付款 →';
-    btn.disabled = false;
+    btn.textContent = '下一步：前往付款 →'; btn.disabled = false;
   }
 
-  // ── LIGHTBOX ──
-  function openLightbox(src, caption) {
-    document.getElementById('lb-img').src = src;
-    document.getElementById('lb-caption').textContent = caption || '';
-    document.getElementById('lightbox').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeLightbox(e) {
-    if (!e || e.target === document.getElementById('lightbox') || e.target.classList.contains('lb-close')) {
-      document.getElementById('lightbox').classList.remove('open');
-      document.body.style.overflow = '';
-    }
-  }
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeLightbox({ target: document.getElementById('lightbox') });
-  });
+  function openLightbox(src, caption) { document.getElementById('lb-img').src = src; document.getElementById('lb-caption').textContent = caption||''; document.getElementById('lightbox').classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeLightbox(e) { if (!e || e.target === document.getElementById('lightbox') || e.target.classList.contains('lb-close')) { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; } }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox({ target: document.getElementById('lightbox') }); });
 </script>
 </body>
 </html>
