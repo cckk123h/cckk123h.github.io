@@ -140,6 +140,7 @@
       <div class="step2-icon">✦</div>
       <div class="step2-title">資料已記錄</div>
       <div class="step2-desc">
+       <span style="color:rgba(255,255,255,0.6);font-size:0.52rem">前往後需登入或註冊 uniopen 帳號才能完成購買</span>
         感謝你！接下來請點擊下方按鈕<br>
         前往賣貨便完成付款與取貨設定。<br><br>
         Thank you. Please proceed to complete<br>
@@ -154,13 +155,13 @@
   <div class="summary-side">
     <div class="summary-label">Order Summary</div>
     <div class="product-card">
-      <div class="product-thumb" onclick="openLightbox('seito-cover.png','SEITO Issue 001 — Cover')">
+      <div class="product-thumb" onclick="openLightbox('seito-cover.png','SEITO Issue 001 Bundle — Cover')">
         <img src="seito-cover.png" alt="SEITO 001">
         <div class="thumb-zoom">放大 ↗</div>
       </div>
       <div class="product-info">
         <img src="seito-logo.png" alt="Seito" class="product-logo">
-        <div class="product-issue">Issue 001</div>
+        <div class="product-issue">Issue 001 Bundle</div>
         <div class="product-format">B5 Print · 2026</div>
         <div class="qty-row">
           <button class="qty-btn" id="qtyMinus" onclick="changeQty(-1)" disabled>−</button>
@@ -170,7 +171,7 @@
       </div>
     </div>
     <div class="s-rows">
-      <div class="s-row"><span>SEITO 001 × <span id="s-qty">1</span></span><span class="s-price" id="s-subtotal">NT$1,800</span></div>
+      <div class="s-row"><span>SEITO Issue 001 Bundle × <span id="s-qty">1</span></span><span class="s-price" id="s-subtotal">NT$1,800</span></div>
       <div class="s-row"><span>運費 Shipping</span><span class="s-price">依賣貨便</span></div>
       <div class="s-row total"><span>小計 Subtotal</span><span id="s-total">NT$1,800</span></div>
     </div>
@@ -191,7 +192,7 @@
   const cur = document.getElementById('cursor');
   document.addEventListener('mousemove', e => { cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px'; });
 
-  const UNIT_PRICE = 1000;
+  const UNIT_PRICE = 1800;
   let qty = 1;
   function changeQty(delta) {
     qty = Math.max(1, qty + delta);
