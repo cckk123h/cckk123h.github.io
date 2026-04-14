@@ -7,16 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --black:   #0a0a0a;
-    --white:   #ffffff;
-    --red:     #88271d;
-    --dim:     rgba(255,255,255,0.4);
-    --dimmer:  rgba(255,255,255,0.12);
-    --surface: #111111;
-    --border:  rgba(255,255,255,0.1);
-    --err:     #e05a4a;
-  }
+  :root { --black: #0a0a0a; --white: #ffffff; --red: #88271d; --dim: rgba(255,255,255,0.4); --dimmer: rgba(255,255,255,0.12); --surface: #111111; --border: rgba(255,255,255,0.1); --err: #e05a4a; }
   body { background: var(--black); color: var(--white); font-family: 'DM Mono', monospace; font-weight: 300; min-height: 100vh; cursor: none; }
   .cursor { position: fixed; width: 8px; height: 8px; background: var(--white); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width 0.15s, height 0.15s; }
   body:has(a:hover) .cursor, body:has(button:hover) .cursor { width: 34px; height: 34px; background: transparent; border: 1px solid var(--white); }
@@ -39,6 +30,11 @@
   .field.has-error input { border-color: var(--err); }
   .field-err { font-size: 0.42rem; letter-spacing: 0.1em; color: var(--err); text-transform: uppercase; display: none; }
   .field.has-error .field-err { display: block; }
+  .phone-row { display: flex; gap: 0; }
+  .phone-prefix { background: var(--surface); border: 1px solid var(--border); border-right: none; color: var(--white); font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 1rem 0.8rem; outline: none; cursor: none; -webkit-appearance: none; flex-shrink: 0; transition: border-color 0.2s; }
+  .phone-prefix:focus { border-color: rgba(255,255,255,0.5); }
+  .phone-prefix option { background: var(--black); }
+  .field.has-error .phone-prefix { border-color: var(--err); }
   .btn-submit { width: 100%; background: var(--white); color: var(--black); font-family: 'DM Mono', monospace; font-weight: 400; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; border: 2px solid var(--white); padding: 1.2rem; cursor: none; transition: background 0.2s, color 0.2s; }
   .btn-submit:hover { background: transparent; color: var(--white); }
   .btn-submit:disabled { opacity: 0.35; pointer-events: none; }
@@ -48,7 +44,7 @@
   .step2-icon { font-size: 1.2rem; color: var(--dim); margin-bottom: 1.5rem; }
   .step2-title { font-size: 1.4rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 400; margin-bottom: 0.8rem; }
   .step2-desc { font-size: 0.6rem; letter-spacing: 0.07em; color: var(--dim); line-height: 2; margin-bottom: 2.5rem; }
-  .btn-711 { display: block; text-align: center; background: var(--white); color: var(--black); font-family: 'DM Mono', monospace; font-weight: 400; font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase; text-decoration: none; padding: 1.2rem 2.8rem; border: 2px solid var(--white); cursor: none; transition: background 0.2s, color 0.2s; margin-bottom: 1rem; }
+  .btn-711 { display: block; text-align: center; background: var(--white); color: var(--black); font-family: 'DM Mono', monospace; font-weight: 400; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; padding: 1.2rem 2rem; border: 2px solid var(--white); cursor: none; transition: background 0.2s, color 0.2s; margin-bottom: 1rem; }
   .btn-711:hover { background: transparent; color: var(--white); }
   .btn-restart { font-size: 0.5rem; letter-spacing: 0.18em; color: var(--dim); text-transform: uppercase; background: none; border: none; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 2px; cursor: none; font-family: 'DM Mono', monospace; transition: color 0.2s; margin-top: 0.5rem; }
   .btn-restart:hover { color: var(--white); }
@@ -64,11 +60,6 @@
   .product-logo { height: 18px; width: auto; display: block; margin-bottom: 0.4rem; }
   .product-issue { font-size: 0.58rem; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.2rem; }
   .product-format { font-size: 0.42rem; letter-spacing: 0.16em; color: rgba(255,255,255,0.25); text-transform: uppercase; }
-  .qty-row { display: flex; align-items: center; margin-top: 1rem; border: 1px solid var(--border); width: fit-content; }
-  .qty-btn { width: 36px; height: 36px; background: none; border: none; color: var(--white); font-size: 1.1rem; cursor: none; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-family: 'DM Mono', monospace; flex-shrink: 0; }
-  .qty-btn:hover { background: rgba(255,255,255,0.08); }
-  .qty-btn:disabled { color: rgba(255,255,255,0.2); pointer-events: none; }
-  .qty-num { width: 40px; text-align: center; font-size: 0.75rem; letter-spacing: 0.1em; color: var(--white); border-left: 1px solid var(--border); border-right: 1px solid var(--border); line-height: 36px; user-select: none; }
   .s-rows { margin-bottom: 1rem; }
   .s-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 0.7rem 0; border-bottom: 1px solid var(--dimmer); font-size: 0.56rem; letter-spacing: 0.06em; color: var(--dim); }
   .s-row:last-child { border-bottom: none; }
@@ -94,7 +85,6 @@
     nav { padding: 1rem 1.5rem; }
     .lightbox-inner { max-width: 90vw; }
   }
-  @media (max-width: 400px) { .product-thumb { width: 90px; } }
 </style>
 </head>
 <body>
@@ -112,10 +102,7 @@
     <div id="step1">
       <p class="step-label">Step 1 of 2</p>
       <h1 class="page-title">留下資料</h1>
-      <p class="page-subtitle">
-        填寫後我們將你的資訊記錄下來，<br>
-        接著會帶你前往賣貨便完成付款與取貨設定。
-      </p>
+      <p class="page-subtitle">填寫後我們將你的資訊記錄下來，<br>接著會帶你前往賣貨便完成付款與取貨設定。</p>
       <div class="fields">
         <div class="field" id="f-name">
           <label>真實姓名 Full Name *</label>
@@ -124,7 +111,19 @@
         </div>
         <div class="field" id="f-phone">
           <label>電話 Phone *</label>
-          <input type="tel" id="inp-phone" placeholder="09XX-XXX-XXX" autocomplete="tel">
+          <div class="phone-row">
+            <select id="phone-prefix" class="phone-prefix">
+              <option value="09">🇹🇼 09</option>
+              <option value="+886">🇹🇼 +886</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+81">🇯🇵 +81</option>
+              <option value="+82">🇰🇷 +82</option>
+              <option value="+86">🇨🇳 +86</option>
+              <option value="+852">🇭🇰 +852</option>
+            </select>
+            <input type="tel" id="inp-phone" placeholder="XX-XXX-XXXX" autocomplete="tel">
+          </div>
           <span class="field-err">請輸入有效的電話號碼</span>
         </div>
         <div class="field" id="f-email">
@@ -136,17 +135,18 @@
       <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">下一步：前往付款 →</button>
       <p class="form-note">你的資料僅用於訂單確認，不會用於其他用途</p>
     </div>
+
     <div class="step2" id="step2">
       <div class="step2-icon">✦</div>
       <div class="step2-title">資料已記錄</div>
       <div class="step2-desc">
-       <span style="color:rgba(255,255,255,0.6);font-size:0.52rem">前往後需登入或註冊 uniopen 帳號才能完成購買<br><br></span>
         感謝你！接下來請點擊下方按鈕<br>
         前往賣貨便完成付款與取貨設定。<br><br>
         Thank you. Please proceed to complete<br>
-        your purchase on Myship.
+        your purchase on 賣貨便.<br><br>
+        <span style="color:rgba(255,255,255,0.6);font-size:0.52rem">前往後需登入或註冊 uniopen 帳號才能完成購買</span>
       </div>
-      <a href="https://myship.7-11.com.tw/cart/confirm/GM2603296574070" class="btn-711" target="_blank">前往賣貨便付款 →</a>
+      <a href="https://myship.7-11.com.tw/cart/confirm/GM2603296574070" class="btn-711" target="_blank">前往賣貨便選擇數量並完成訂單 →</a>
       <br>
       <button class="btn-restart" onclick="restart()">← 重新填寫</button>
     </div>
@@ -155,7 +155,7 @@
   <div class="summary-side">
     <div class="summary-label">Order Summary</div>
     <div class="product-card">
-      <div class="product-thumb" onclick="openLightbox('seito-cover.png','SEITO Issue 001 Bundle — Cover')">
+      <div class="product-thumb" onclick="openLightbox('seito-cover.png','SEITO Issue 001 — Cover')">
         <img src="seito-cover.png" alt="SEITO 001">
         <div class="thumb-zoom">放大 ↗</div>
       </div>
@@ -163,17 +163,12 @@
         <img src="seito-logo.png" alt="Seito" class="product-logo">
         <div class="product-issue">Issue 001 Bundle</div>
         <div class="product-format">B5 Print · 2026</div>
-        <div class="qty-row">
-          <button class="qty-btn" id="qtyMinus" onclick="changeQty(-1)" disabled>−</button>
-          <div class="qty-num" id="qtyNum">1</div>
-          <button class="qty-btn" id="qtyPlus" onclick="changeQty(1)">+</button>
-        </div>
       </div>
     </div>
     <div class="s-rows">
-      <div class="s-row"><span>SEITO Issue 001 Bundle × <span id="s-qty">1</span></span><span class="s-price" id="s-subtotal">NT$1,800</span></div>
+      <div class="s-row"><span>SEITO Issue 001 Bundle</span><span class="s-price">NT$1,680</span></div>
       <div class="s-row"><span>運費 Shipping</span><span class="s-price">依賣貨便</span></div>
-      <div class="s-row total"><span>小計 Subtotal</span><span id="s-total">NT$1,800</span></div>
+      <div class="s-row total"><span>Price</span><span>NT$1,680</span></div>
     </div>
     <div class="notice">限量發行，售完為止。<br>付款與取貨由賣貨便處理。<br>Limited print run. Payment &amp; pickup via 賣貨便.</div>
   </div>
@@ -192,23 +187,12 @@
   const cur = document.getElementById('cursor');
   document.addEventListener('mousemove', e => { cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px'; });
 
-  const UNIT_PRICE = 1800;
-  let qty = 1;
-  function changeQty(delta) {
-    qty = Math.max(1, qty + delta);
-    document.getElementById('qtyNum').textContent = qty;
-    document.getElementById('qtyMinus').disabled = qty <= 1;
-    document.getElementById('s-qty').textContent = qty;
-    document.getElementById('s-subtotal').textContent = `NT$${(UNIT_PRICE*qty).toLocaleString()}`;
-    document.getElementById('s-total').textContent = `NT$${(UNIT_PRICE*qty).toLocaleString()}`;
-  }
-
   function validate() {
-    const name = document.getElementById('inp-name').value.trim();
+    const name  = document.getElementById('inp-name').value.trim();
     const phone = document.getElementById('inp-phone').value.trim();
     const email = document.getElementById('inp-email').value.trim();
-    const nameOk = name.length >= 2;
-    const phoneOk = /^[0-9\-\s\+]{8,15}$/.test(phone);
+    const nameOk  = name.length >= 2;
+    const phoneOk = /^[0-9\-\s]{6,14}$/.test(phone);
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     document.getElementById('f-name').classList.toggle('has-error', !nameOk);
     document.getElementById('f-phone').classList.toggle('has-error', !phoneOk);
@@ -225,7 +209,13 @@
     const btn = document.getElementById('submitBtn');
     btn.textContent = '處理中...'; btn.disabled = true;
     const orderNum = 'SEITO-' + Date.now().toString().slice(-6);
-    const payload = { name: document.getElementById('inp-name').value.trim(), phone: document.getElementById('inp-phone').value.trim(), email: document.getElementById('inp-email').value.trim(), order: orderNum, qty: qty };
+    const prefix = document.getElementById('phone-prefix').value;
+    const payload = {
+      name:  document.getElementById('inp-name').value.trim(),
+      phone: prefix + ' ' + document.getElementById('inp-phone').value.trim(),
+      email: document.getElementById('inp-email').value.trim(),
+      order: orderNum
+    };
     try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); } catch(err) {}
     document.getElementById('step1').style.display = 'none';
     document.getElementById('step2').classList.add('show');
@@ -233,7 +223,6 @@
   }
 
   function restart() {
-    qty = 1; changeQty(0);
     document.getElementById('step1').style.display = 'block';
     document.getElementById('step2').classList.remove('show');
     ['inp-name','inp-phone','inp-email'].forEach(id => document.getElementById(id).value = '');
