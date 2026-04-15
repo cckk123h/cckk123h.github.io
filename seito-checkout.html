@@ -204,7 +204,12 @@
       email: document.getElementById('inp-email').value.trim(),
       order: orderNum
     };
-    try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); } catch(err) {}
+    try {
+  await Promise.race([
+    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }),
+    new Promise(resolve => setTimeout(resolve, 3000))
+  ]);
+} catch(err) {}
     document.getElementById('step1').style.display = 'none';
     document.getElementById('step2').classList.add('show');
     window.scrollTo({ top: 0, behavior: 'smooth' });
