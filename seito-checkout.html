@@ -308,7 +308,6 @@
     document.getElementById('s2-qty').textContent = qty;
     document.getElementById('s2-sub').textContent = `NT$${(UNIT * qty).toLocaleString()}`;
     document.getElementById('s2-total').textContent = `NT$${total.toLocaleString()}`;
-    fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }).catch(() => {});
     await new Promise(r => setTimeout(r, 800));
     document.getElementById('step1').classList.remove('active');
     document.getElementById('step2').classList.add('active');
