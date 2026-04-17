@@ -7,25 +7,28 @@ function doPost(e) {
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
 
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['時間戳記', '姓名', '電話', 'Email', '訂單編號', '數量']);
-      sheet.getRange(1, 1, 1, 6).setFontWeight('bold');
+      sheet.appendRow(['時間戳記','訂單編號','姓名','電話','Email','取貨門市','數量','總金額','帳號末五碼','狀態']);
+      sheet.getRange(1,1,1,10).setFontWeight('bold');
     }
 
     const timestamp = Utilities.formatDate(new Date(), 'Asia/Taipei', 'yyyy-MM-dd HH:mm:ss');
 
     sheet.appendRow([
       timestamp,
-      data.name  || '',
-      data.phone || '',
-      data.email || '',
-      data.order || '',
-      data.qty   || 1
+      data.order    || '',
+      data.name     || '',
+      data.phone    || '',
+      data.email    || '',
+      data.store    || '',
+      data.qty      || '',
+      data.total    || '',
+      data.bankcode || '',
+      data.status   || '待匯款'
     ]);
 
     return ContentService
       .createTextOutput(JSON.stringify({ status: 'ok' }))
       .setMimeType(ContentService.MimeType.JSON);
-
   } catch (err) {
     return ContentService
       .createTextOutput(JSON.stringify({ status: 'error', message: err.toString() }))
