@@ -289,7 +289,7 @@
 
   document.addEventListener('input', e => { const f = e.target.closest('.field'); if (f) f.classList.remove('has-error'); });
 
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwh5f3ouY2GvGZUlqj4vOACmb_vUR0FCIno_Sspcja-fXHF-I9Dz0Co1uXlQnmw0jqANQ/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8M6WYQvIOZ9Z7p8jiB_brcA1JaAUAYlUwobQ3NvL8-WaHVdcdo1gAaED2zf_TVl04Ng/exec';
 
   async function submitStep1() {
     if (!validateStep1()) { document.querySelector('.has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
